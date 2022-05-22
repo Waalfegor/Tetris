@@ -60,37 +60,62 @@ void Hide()
 
 int main()
 {
-	while (true) {
-		srand(time(0));
-		Hide();
+	srand(time(0)); 
+	Hide();
 
+	// Создание и загрузка текстуры
+	Texture texture, texture_background, texture_frame, texture_start, texture_game_over;
+	texture.loadFromFile("tiles.png");
+	texture_background.loadFromFile("background.png");
+	texture_frame.loadFromFile("frame.png");
+	texture_start.loadFromFile("start.png");
+	texture_game_over.loadFromFile("game_over.png");
+
+	// Создание спрайта
+	Sprite sprite(texture), sprite_background(texture_background), sprite_frame(texture_frame), sprite_start(texture_start), sprite_game_over(texture_game_over);
+
+	// Вырезаем из спрайта отдельный квадратик размером 18х18 пикселей
+	sprite.setTextureRect(IntRect(0, 0, 18, 18));
+
+	// Переменные для горизонтального перемещения и вращения
+	int dx = 0; bool rotate = 0; int colorNum = 1; bool beginGame = true; int n = rand() % 7;
+
+	// Переменные для таймера и задержки
+	float timer = 0, delay = 0.4;
+
+	// Часы (таймер)
+	Clock clock;
+
+	bool IsRun = true;
+
+	RenderWindow window0(VideoMode(320, 480), "Tetris");
+
+	while (window0.isOpen())
+	{
+		Event event;
+		while (window0.pollEvent(event))
+		{
+			// Пользователь нажал на «крестик» и хочет закрыть окно?
+			if (event.type == Event::Closed)
+			{
+				window0.close();
+				return 0;
+			}
+		}
+		window0.clear(Color::White);
+		window0.draw(sprite_start);
+		window0.display();
+		if (Keyboard::isKeyPressed(Keyboard::Space))
+		{
+			window0.close();
+			break;
+		}
+	}
+
+	while (true) {
+		// Цикл игры. Выполняется, пока открыто окно
 		RenderWindow window(VideoMode(320, 480), "Tetris"); // 320, 480
 
-		// Создание и загрузка текстуры
-		Texture texture, texture_background, texture_frame, texture_game_over;
-		texture.loadFromFile("tiles.png");
-		texture_background.loadFromFile("background.png");
-		texture_frame.loadFromFile("frame.png");
-		texture_game_over.loadFromFile("game_over.png");
-
-		// Создание спрайта
-		Sprite sprite(texture), sprite_background(texture_background), sprite_frame(texture_frame), sprite_game_over(texture_game_over);
-
-		// Вырезаем из спрайта отдельный квадратик размером 18х18 пикселей
-		sprite.setTextureRect(IntRect(0, 0, 18, 18));
-
-		// Переменные для горизонтального перемещения и вращения
-		int dx = 0; bool rotate = 0; int colorNum = 1; bool beginGame = true; int n = rand() % 7;
-
-		// Переменные для таймера и задержки
-		float timer = 0, delay = 0.4;
-
-		// Часы (таймер)
-		Clock clock;
-
-		bool IsRun = endGame(&window);
-
-		// Цикл игры. Выполняется, пока открыто окно
 		while (window.isOpen() && IsRun)
 		{
 			IsRun = endGame(&window);
@@ -233,10 +258,10 @@ int main()
 		}
 
 		IsRun = true;
-		
-		for (int i = 0; i < M; i++)   
+
+		for (int i = 0; i < M; i++)
 		{
-			for (int j = 0; j < N; j++)   
+			for (int j = 0; j < N; j++)
 			{
 				field[i][j] = 0;
 			}
